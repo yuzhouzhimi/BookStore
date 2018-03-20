@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd" >
+    <!--spring框架搭建-->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/book"></property>
+        <property name="user" value="root"/>
+        <property name="password" value="zsx12345"/>
+    </bean>
+<!--hibernate框架托管给spring-->
+    <!-- session factory -->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+    <property name="dataSource" ref="dataSource"></property>
+    <property name="hibernateProperties">
+        <props>
+            <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+            <prop key="hibernate.show_sql">true</prop>
+            <prop key="hibernate.connection.url">jdbc:mysql://localhost:3306/bookstore</prop>
+            <prop key="hibernate.connection.driver_class">com.mysql.jdbc.Driver</prop>
+        </props>
+    </property>
+        <!--hibernate层与数据库层的映射文件-->
+        <property name="mappingLocations">
+            <list>
+                <value>classpath:model/Book.hbm.xml</value>
+                <value>classpath:model/Catalog.hbm.xml</value>
+                <value>classpath:model/Manager.hbm.xml</value>
+                <value>classpath:model/Orderitem.hbm.xml</value>
+                <value>classpath:model/Orders.hbm.xml</value>
+                <value>classpath:model/User.hbm.xml</value>
+            </list>
+        </property>
+    </bean>
+<!--hibernate层事务配置，从而可通过hibernate操作数据库读写-->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!--定义那些方法是只读的和可读写的-->
+            <tx:method name="find*" read-only="true" />
+            <tx:method name="*"/>
+        </tx:attributes>
+    </tx:advice>
+    <!--所有在dao包下面的方法均需要通过事务控制-->
+    <aop:config>
+        <aop:pointcut expression="execution(*  dao.impl.*DAO.*(..))" id="pointcut" />
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut"/>
+    </aop:config>
+<!--userDAO的注入，spring进行管理-->
+    <bean id="userDAO" class="dao.impl.UserDAO">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+    <!--userService注入，其中用到了userDAO，将其部署到userService配置中-->
+    <bean id="userService"
+          class="service.impl.UserService">
+        <property name="userDAO">
+            <ref bean="userDAO" />
+        </property>
+    </bean>
+    <!--userAction用到了userservice，将其部署到userAction中-->
+    <bean id="userAction" class="action.UserAction">
+        <property name="userService">
+            <ref bean="userService" />
+        </property>
+    </bean>
+    <!--catalogDAO的注入，spring进行管理-->
+    <bean id="catalogDAO" class="dao.impl.CatalogDAO">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+    <!--catalogService用到了catalogDAO，将其部署到catalogService-->
+    <bean id="catalogService"
+          class="service.impl.CatalogService">
+        <property name="catalogDAO">
+            <ref bean="catalogDAO" />
+        </property>
+    </bean>
+    <!--bookAction用到了catalogService，bookService，将其部署到bookAction-->
+    <bean id="bookAction" class="action.BookAction">
+        <property name="catalogService">
+            <ref bean="catalogService" />
+        </property>
+        <property name="bookService">
+            <ref bean="bookService" />
+        </property>
+    </bean>
+    <!--bookDAO的注入，spring进行管理-->
+    <bean id="bookDAO" class="dao.impl.BookDAO">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+    <!--bookService用到了bookDAO，将其部署到bookService-->
+    <bean id="bookService"
+          class="service.impl.BookService">
+        <property name="bookDAO">
+            <ref bean="bookDAO" />
+        </property>
+    </bean>
+    <!--orderDAO的注入，spring进行管理-->
+    <bean id="orderDAO" class="dao.impl.OrderDAO">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+    <!--orderService用到了orderDAO，将其部署到orderService-->
+    <bean id="orderService"
+          class="service.impl.OrderService">
+        <property name="orderDAO">
+            <ref bean="orderDAO" />
+        </property>
+    </bean>
+    <!--shoppingAction用到了bookService，orderService将其部署到shoppingAction-->
+    <bean id="shoppingAction"
+          class="action.ShoppingAction">
+        <property name="bookService">
+            <ref bean="bookService" />
+        </property>
+        <property name="orderService">
+            <ref bean="orderService"/>
+        </property>
+    </bean>
+    <!--managerDAO的注入，spring进行管理-->
+    <bean id="managerDAO" class="dao.impl.ManagerDAO">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+    <!--managerService用到了managerDAO，将其部署到managerService-->
+    <bean id="managerService" class="service.impl.ManagerService">
+        <property name="managerDAO"><ref bean="managerDAO"/>
+        </property>
+    </bean>
+    <!--managerAction用到了managerService，bookService，将其部署到managerService-->
+    <bean id="managerAction" class="action.ManagerAction">
+        <property name="managerService">
+            <ref bean="managerService"/>
+        </property>
+        <property name="bookService">
+            <ref bean="bookService" />
+        </property>
+    </bean>
+</beans>

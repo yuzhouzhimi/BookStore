@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+<!--book的映射文件-->
+    <class name="model.Book" table="bookstore.book" >
+        <id name="bookid">
+            <column name="bookid" sql-type="int(11)"/>
+        </id>
+        <property name="bookname">
+            <column name="bookname" sql-type="varchar(50)" length="50"/>
+        </property>
+        <property name="price">
+            <column name="price" sql-type="double" precision="-1"/>
+        </property>
+        <property name="picture">
+            <column name="picture" sql-type="varchar(50)" length="50"/>
+        </property>
+        <property name="quantity">
+            <column name="quantity" sql-type="int(11)" not-null="true"/>
+        </property>
+        <!--多本书可对应同一目录-->
+        <many-to-one name="catalog" class="model.Catalog" lazy="false">
+            <column name="catalogid"></column>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

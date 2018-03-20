@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+<!--struts框架的配置文件，将action和jsp进行对应-->
+<struts>
+    <constant name="struts.i18n.encoding" value="UTF-8" />
+    <!--<constant name="struts.objectFactory" value="spring" />-->
+    <include file="struts-default.xml"/>
+    <package name="default" extends="struts-default">
+<!--注册-->
+    <action name="register" class="action.UserAction" method="register">
+        <result name="success">/register_success.jsp</result>
+    </action>
+<!--登录-->
+        <action name="login" class="userAction">
+            <result name="success">/login_success.jsp</result>
+            <result name="error">/login.jsp</result>
+        </action>
+<!--管理员登录-->
+        <action name="managerlogin" class="managerAction">
+            <result name="success">/managerlogin_success.jsp</result>
+            <result name="error">/manager_login.jsp</result>
+        </action>
+        <!--用户注销登录-->
+        <action name="logout" class="userAction" method="logout">
+            <result name="success">/index.jsp</result>
+        </action>
+<!--图书类别展示-->
+        <action name="browseCatalog" class="bookAction"
+                method="browseCatalog">
+            <result name="success">/menu.jsp</result>
+        </action>
+<!--新书展示-->
+        <action name="newBook" class="bookAction" method="newBook">
+            <result name="success">/newBook_success.jsp</result>
+        </action>
+<!--管理员查看所有书籍信息-->
+        <action name="showbook" class="managerAction" method="showBook">
+        <result name="success">/showbook.jsp</result>
+        </action>
+<!--管理员查看所有管理员信息-->
+        <action name="showmanager" class="managerAction" method="showManager">
+            <result name="success">/showmanager.jsp</result>
+        </action>
+        <!--管理员查看所有用户信息-->
+        <action name="showuser" class="managerAction" method="showUser">
+            <result name="success">/showuser.jsp</result>
+        </action>
+        <!--管理员查看所有订单信息-->
+        <action name="showorder" class="managerAction" method="showOrder">
+            <result name="success">/showorder.jsp</result>
+        </action>
+
+        <!-- 删除书籍（删除用户）-->
+        <action name="deletebook" class="bookAction" method="deleteBook">
+            <result name="success" >/showbook.jsp</result>
+        </action>
+        <!--根据分类选项进行图书展示-->
+        <action name="browseBookPaging" class="bookAction"
+                method="browseBookPaging">
+            <result name="success">/browseBookPaging.jsp</result>
+        </action>
+<!--搜索书籍-->
+        <action name="searchBook" class="bookAction"
+                method="searchBook">
+            <result name="success">/searchBook_result.jsp</result>
+        </action>
+        <!--添加书籍-->
+<action name="addbook" class="managerAction" method="addBook">
+    <result name="success">/managerlogin_success.jsp</result>
+</action>
+<!--添加购物车-->
+        <action name="addToCart" class="shoppingAction"
+                method="addToCart">
+            <result name="success">/addToCart_success.jsp</result>
+        </action>
+<!--更新购物车-->
+        <action name="updateCart" class="shoppingAction"
+                method="updateCart">
+            <result name="success">/showCart.jsp</result>
+        </action>
+<!--用户注销登录-->
+        <action name="checkout" class="shoppingAction"
+                method="checkout">
+            <result name="success">/checkout_success.jsp</result>
+            <result name="error">/login.jsp</result>
+        </action>
+    </package>
+</struts>

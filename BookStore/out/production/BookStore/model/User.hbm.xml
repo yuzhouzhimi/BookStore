@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <!--user的映射文件-->
+    <class name="model.User" table="bookstore.user">
+        <id name="userid" type="java.lang.Integer">
+            <column name="userid" />
+            <generator class="native" />
+        </id>
+        <property name="username" type="java.lang.String">
+            <column name="username" length="20" not-null="true" />
+        </property>
+        <property name="password" type="java.lang.String">
+            <column name="password" length="20" not-null="true" />
+        </property>
+        <property name="sex" type="java.lang.String">
+            <column name="sex" length="4" />
+        </property>
+        <property name="age" type="java.lang.Integer">
+            <column name="age" />
+        </property>
+        <property name="phone" type="java.lang.String">
+            <column name="phone"/>
+        </property>
+        <property name="address" type="java.lang.String">
+            <column name="address"/>
+        </property>
+        <!--一个用户对应多张订单-->
+        <set name="orderses" inverse="true">
+            <key>
+                <column name="userid" />
+            </key>
+            <one-to-many class="model.Orders" />
+        </set>
+    </class>
+</hibernate-mapping>

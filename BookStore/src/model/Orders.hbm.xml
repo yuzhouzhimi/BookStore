@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+<!--orders的映射文件-->
+    <class name="model.Orders" table="bookstore.orders">
+        <id name="orderid" type="java.lang.Integer">
+            <column name="orderid" />
+            <generator class="native" />
+        </id>
+        <many-to-one name="user" class="model.User" fetch="select">
+            <column name="userid" />
+        </many-to-one>
+        <property name="orderdate" type="java.util.Date">
+            <column name="orderdate" length="0"  />
+        </property>
+        <set name="orderitems" cascade="all" inverse="true">
+            <key>
+                <column name="orderid" />
+            </key>
+            <one-to-many class="model.Orderitem" />
+        </set>
+    </class>
+</hibernate-mapping>
